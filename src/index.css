@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.active {
+  color: white;
+  background-color: rgb(59, 130, 246);
+  padding: 12px 8px;
+  border-radius: 8px;
+}
+
+.breadcrumbs .crumb::after {
+  content: " > ";
+}
+.crumb a {
+  text-decoration: underline;
+}
+.breadcrumbs .crumb:last-child:after {
+  display: none;
+}
