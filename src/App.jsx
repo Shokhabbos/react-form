@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Cleave from "cleave.js/react";
+import Modal from "./components/Modal";
 
 const App = () => {
   const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ const App = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [creditCardType, setCreditCardType] = useState(null);
-  const [errors, setErrors] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const validateStep = () => {
     // Validate credit card number
@@ -44,7 +45,13 @@ const App = () => {
     const isStepValid = validateStep();
 
     if (isStepValid) {
-      setCurrentStep((prevStep) => prevStep + 1);
+      if (currentStep === 6) {
+        // Show modal when reaching the final step
+        setIsModalOpen(true);
+      } else {
+        // Move to the next step
+        setCurrentStep((prevStep) => prevStep + 1);
+      }
     }
   };
 
@@ -58,6 +65,7 @@ const App = () => {
 
     if (isFormValid) {
       console.log("Form submitted:", formData);
+      setIsModalOpen(true);
       // Add logic to submit the form data
     }
   };
@@ -81,8 +89,12 @@ const App = () => {
         src: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Visa_2021.svg/1920px-Visa_2021.svg.png",
       },
       {
-        type: "American Express",
+        type: "Amex",
         src: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_%282018%29.svg/641px-American_Express_logo_%282018%29.svg.png",
+      },
+      {
+        type: "maestro",
+        src: "https://www.freevector.com/uploads/vector/preview/1517/FreeVector-Maestro.jpg",
       },
     ];
 
@@ -94,8 +106,8 @@ const App = () => {
             src={card.src}
             alt={card.type}
             className={`h-8 ${
-              creditCardType === card.type
-                ? "border border-purple-500"
+              creditCardType === card.type.toLowerCase()
+                ? "opacity-100"
                 : "opacity-30"
             }`}
           />
@@ -298,51 +310,138 @@ const App = () => {
                 />
               </label>
 
-              {creditCardType !== null && (
-                <>
-                  <p className="mt-2 text-sm">
-                    Detected Credit Card Type: {creditCardType}
-                  </p>
-
-                  {/* Display card logos below the input field with opacity */}
-                  <div className="mt-2 flex space-x-4">
-                    {/* Include valid images URLs here */}
-                    {/* Make sure to replace the placeholder URLs */}
-                    <img
-                      src="valid_image_url_for_mastercard"
-                      alt="MasterCard"
-                      className={`h-8 ${
-                        creditCardType === "MasterCard"
-                          ? "opacity-100"
-                          : "opacity-30"
-                      }`}
-                    />
-                    <img
-                      src="valid_image_url_for_visa"
-                      alt="Visa"
-                      className={`h-8 ${
-                        creditCardType === "Visa" ? "opacity-100" : "opacity-30"
-                      }`}
-                    />
-                  </div>
-                </>
-              )}
+              {creditCardType !== null && renderCardImages()}
             </>
           )}
 
           {currentStep === 5 && (
             <>
               {/* Step 5 UI and form fields */}
-              {/* ... */}
+              <h2>Step 5 - Consent to Personal Data Processing</h2>
+              <div className="mb-4">
+                <label>
+                  Login:
+                  <input
+                    type="text"
+                    value={formData.login}
+                    disabled
+                    className="ml-2 rounded-md border px-3 py-2"
+                  />
+                </label>
+              </div>
+              <div className="mb-4">
+                <label>
+                  Email:
+                  <input
+                    type="email"
+                    value={formData.email}
+                    disabled
+                    className="ml-2 rounded-md border px-3 py-2"
+                  />
+                </label>
+              </div>
+              <div className="mb-4">
+                <label>
+                  Consent to Personal Data Processing:
+                  <input
+                    type="checkbox"
+                    name="consentToProcessing"
+                    checked={formData.consentToProcessing}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        consentToProcessing: e.target.checked,
+                      })
+                    }
+                    className="ml-2"
+                    required
+                  />
+                  <span className="ml-2">
+                    I consent to personal data processing
+                  </span>
+                </label>
+              </div>
+              <div className="mb-4">
+                <label>
+                  Site Uses Cookie Agreement:
+                  <input
+                    type="checkbox"
+                    name="cookieAgreement"
+                    checked={formData.cookieAgreement}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        cookieAgreement: e.target.checked,
+                      })
+                    }
+                    className="ml-2"
+                    required
+                  />
+                  <span className="ml-2">
+                    I agree to the site's use of cookies
+                  </span>
+                </label>
+              </div>
             </>
           )}
 
           {currentStep === 6 && (
             <>
               {/* Final step UI and displaying entered data */}
-              <h2>Review your information</h2>
-              {/* Display all entered data here */}
-              {/* ... */}
+              <h2 className="mb-4 text-2xl font-bold">
+                Review your information
+              </h2>
+
+              <div className="rounded-md bg-gray-100 p-4 shadow-md">
+                <p className="mb-2">
+                  <strong>Login:</strong> {formData.login}
+                </p>
+                <p className="mb-2">
+                  <strong>Password:</strong> {formData.password}
+                </p>
+                <p className="mb-2">
+                  <strong>Confirm Password:</strong> {formData.confirmPassword}
+                </p>
+                <p className="mb-2">
+                  <strong>Subscription Type:</strong>{" "}
+                  {formData.subscriptionType}
+                </p>
+                <p className="mb-2">
+                  <strong>First Name:</strong> {formData.firstName}
+                </p>
+                <p className="mb-2">
+                  <strong>Last Name:</strong> {formData.lastName}
+                </p>
+                <p className="mb-2">
+                  <strong>Middle Name:</strong> {formData.middleName}
+                </p>
+                <p className="mb-2">
+                  <strong>Birthdate:</strong> {formData.birthdate}
+                </p>
+                <p className="mb-2">
+                  <strong>Email:</strong> {formData.email}
+                </p>
+                <p className="mb-2">
+                  <strong>Gender:</strong> {formData.gender}
+                </p>
+                <p className="mb-2">
+                  <strong>Are you older than 18?</strong>{" "}
+                  {formData.isOlderThan18 ? "Yes" : "No"}
+                </p>
+                <p className="mb-2">
+                  <strong>Card Number:</strong> {formData.cardNumber}
+                </p>
+                <p className="mb-2">
+                  <strong>Consent to personal data processing:</strong>{" "}
+                  {formData.consentToProcessing ? "Yes" : "No"}
+                </p>
+                <p className="mb-2">
+                  <strong>Site uses cookie agreement:</strong>{" "}
+                  {formData.cookieAgreement ? "Yes" : "No"}
+                </p>
+
+                {/* Add similar lines for other fields as needed */}
+              </div>
             </>
           )}
 
@@ -375,6 +474,7 @@ const App = () => {
           </div>
         </form>
       </div>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };
