@@ -25,6 +25,33 @@ const App = () => {
   const [creditCardType, setCreditCardType] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const resetForm = () => {
+    setFormData({
+      login: "",
+      password: "",
+      confirmPassword: "",
+      subscriptionType: "",
+      firstName: "",
+      lastName: "",
+      middleName: "",
+      birthdate: "",
+      email: "",
+      gender: "",
+      isOlderThan18: false,
+      cardNumber: "",
+      consentToProcessing: false,
+      cookieAgreement: false,
+      cardNumber: "",
+    });
+
+    setCurrentStep(1);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    resetForm();
+  };
+
   const validateStep = () => {
     // Validate credit card number
     if (!isCreditCardValid(formData.cardNumber)) {
@@ -392,7 +419,7 @@ const App = () => {
                 Review your information
               </h2>
 
-              <div className="rounded-md bg-gray-100 p-4 shadow-md">
+              <div className="rounded-md  p-4 ">
                 <p className="mb-2">
                   <strong>Login:</strong> {formData.login}
                 </p>
@@ -474,7 +501,11 @@ const App = () => {
           </div>
         </form>
       </div>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <Modal
+        isOpen={isModalOpen}
+        backTo={() => setIsModalOpen(false)}
+        close={handleCloseModal}
+      />
     </div>
   );
 };
