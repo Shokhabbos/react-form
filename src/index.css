@@ -16,9 +16,7 @@
 .breadcrumbs .crumb::after {
   content: " > ";
 }
-.crumb a {
-  text-decoration: underline;
-}
+
 .breadcrumbs .crumb:last-child:after {
   display: none;
 }
