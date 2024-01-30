@@ -7,6 +7,7 @@ const Step1 = ({ formData, setFormData }) => {
       <InputField
         label="Login"
         name="login"
+        required
         value={formData.login}
         onChange={(e) => setFormData({ ...formData, login: e.target.value })}
       />
